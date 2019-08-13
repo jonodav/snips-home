@@ -354,11 +354,11 @@ class SmartDevices(object):
         print '[Received] intent: {}'.format(intent_message.intent.intent_name)
 
         if dt.datetime.now().hour < 15:
-            dlData = "f,1023,1023"
+            dlData = "f,818,1023"
             deskData = "f,0,0,0,0,255"
             rlData = "f,0"
         elif dt.datetime.now().hour >= 15 and dt.datetime.now().hour < 19:
-            dlData = "f,1023,512"
+            dlData = "f,818,512"
             deskData = "f,0,0,0,255,255"
             lampBrightness = (dt.datetime.now().hour - 18) * 20
             if lampBrightness < 0:
