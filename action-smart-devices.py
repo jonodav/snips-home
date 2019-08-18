@@ -65,6 +65,13 @@ class SmartDevices(object):
                 data = "1"
             if self.State == "Off":
                 data = "0"
+        if self.Device == "plug":
+            ip = "192.168.0.183"
+            port = 18003
+            if self.State == "On":
+                data = "1"
+            if self.State == "Off":
+                data = "0"
         if self.Device == "desk light":
             ip = "192.168.0.181"
             port = 4221
