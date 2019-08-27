@@ -82,6 +82,8 @@ class SmartDevices(object):
         self.Devices = self.extract_devices(intent_message)
         self.States = self.extract_states(intent_message)
 
+        print(len(self.Devices))
+
         for x in range(0, len(self.Devices)):
 
             if len(self.States) != len(self.Devices):
