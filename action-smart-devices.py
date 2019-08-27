@@ -44,25 +44,28 @@ class SmartDevices(object):
     def extract_brightness(self, intent_message):
         extractedBrightness = []
         if intent_message.slots.Brightness:
-            for brightness in intent_message.slots.Brightness.all():
+            for Brightness in intent_message.slots.Brightness.all():
                 extractedBrightness.append(Brightness.value)
         return extractedBrightness
+
     def extract_devices(self, intent_message):
         extractedDevices = []
         if intent_message.slots.Device:
-            for device in intent_message.slots.Device.all():
+            for Device in intent_message.slots.Device.all():
                 extractedDevices.append(Device.value)
         return extractedDevices
+
     def extract_colors(self, intent_message):
         extractedColors = []
         if intent_message.slots.Color:
-            for color in intent_message.slots.Color.all():
+            for Color in intent_message.slots.Color.all():
                 extractedColors.append(Color.value)
         return extractedColors
+
     def extract_states(self, intent_message):
         extractedStates = []
         if intent_message.slots.State:
-            for color in intent_message.slots.State.all():
+            for State in intent_message.slots.State.all():
                 extractedStates.append(State.value)
         return extractedStates
         
@@ -80,7 +83,7 @@ class SmartDevices(object):
         self.States = self.extract_states(intent_message)
 
         for x in range(0, len(self.Devices)):
-            
+
             if len(self.States) != len(self.Devices):
                 self.State = self.States[1]
             else:
