@@ -85,7 +85,7 @@ class SmartDevices(object):
         for x in range(0, len(self.Devices)):
 
             if len(self.States) != len(self.Devices):
-                self.State = self.States[1]
+                self.State = self.States[0]
             else:
                 self.State = self.States[x]
 
