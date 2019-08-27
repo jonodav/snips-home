@@ -169,7 +169,7 @@ class SmartDevices(object):
             sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
             sock.sendto(data, (ip, port))
 
-        if self.Brightness is None:
+        if self.Brightness is not None:
             tts = random.choice(success_tts)
         else:
             tts = random.choice(fail_tts)
