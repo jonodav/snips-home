@@ -83,8 +83,7 @@ class SmartDevices(object):
         self.States = self.extract_states(intent_message)
 
         for x in range(0, len(self.Devices)):
-            print(x)
-
+            
             if len(self.States) != len(self.Devices):
                 self.State = self.States[0]
             else:
@@ -125,9 +124,9 @@ class SmartDevices(object):
                     data = "f,0,0,0"
                 if self.State == "On":
                     data = "f,255,255,255"
-
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
-        sock.sendto(data, (ip, port))
+            
+            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
+            sock.sendto(data, (ip, port))
 
         if data is not None:
             tts = random.choice(success_tts)
