@@ -197,19 +197,19 @@ class SmartDevices(object):
             else:
                 self.Color = self.Colors[x]
 
-            if self.Device == "downlights":
+            if self.Devices[x] == "downlights":
                 ip = "192.168.0.160"
                 port = 16000
                 data = "t," + dataFromColor.ctFromColor(self.Color)
                 deviceSet = True
             
-            if self.Device == "desk light":
+            if self.Devices[x] == "desk light":
                 ip = "192.168.0.181"
                 port = 4221
                 data = "f," + dataFromColor.rgbctFromColor(self.Color)
                 deviceSet = True
             
-            if self.Device == "smart lamp":
+            if self.Devices[x] == "smart lamp":
                 ip = "192.168.0.182"
                 port = 4222
                 deviceSet = True
