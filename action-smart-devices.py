@@ -40,6 +40,31 @@ class SmartDevices(object):
 
         # start listening to MQTT
         self.start_blocking()
+
+    def extract_brightness(self, intent_message):
+        extractedBrightness = []
+        if intent_message.slots.Brightness:
+            for brightness in intent_message.slots.Brightness.all():
+                extractedBrightness.append(Brightness.value)
+        return extractedBrightness
+    def extract_devices(self, intent_message):
+        extractedDevices = []
+        if intent_message.slots.Device:
+            for device in intent_message.slots.Device.all():
+                extractedDevices.append(Device.value)
+        return extractedDevices
+    def extract_colors(self, intent_message):
+        extractedColors = []
+        if intent_message.slots.Color:
+            for color in intent_message.slots.Color.all():
+                extractedColors.append(Color.value)
+        return extractedColors
+    def extract_states(self, intent_message):
+        extractedStates = []
+        if intent_message.slots.State:
+            for color in intent_message.slots.State.all():
+                extractedStates.append(State.value)
+        return extractedStates
         
     # --> Sub callback function, one per intent
     def onOffCallback(self, hermes, intent_message):
@@ -49,50 +74,53 @@ class SmartDevices(object):
         # action code goes here...
         print '[Received] intent: {}'.format(intent_message.intent.intent_name)
 
-        # get the slots from intent
-        for (slot_value, slot) in intent_message.slots.items():
-            if slot_value == "Device":
-                self.Device = slot.first().value.encode("utf8")
-            if slot_value == "State":
-                self.State = slot.first().value.encode("utf8")
-
         data = None
 
-        if self.Device == "downlights":
-            ip = "192.168.0.160"
-            port = 16000
-            if self.State == "On":
-                data = "1"
-            if self.State == "Off":
-                data = "0"
-        if self.Device == "plug":
-            ip = "192.168.0.183"
-            port = 18003
-            if self.State == "On":
-                data = "1"
-            if self.State == "Off":
-                data = "0"
-        if self.Device == "desk light":
-            ip = "192.168.0.181"
-            port = 4221
-            if self.State == "Off":
-                data = "f,0,0,0,0,0"
-            if self.State == "On":
-                data = "f,0,0,0,0,255"
-        if self.Device == "bedside lamp":
-            ip = "192.168.0.180"
-            port = 4220
-            if self.State == "Off":
-                data = "f,0"
-            if self.State == "On":
-                data = "f,255"
-        if self.Device == "smart lamp":
-            ip = "192.168.0.182"
-            port = 4222
-            if self.State == "Off":
-                data = "f,0,0,0"
-            if self.State == "On":
-                data = "f,255,255,255"
+        self.Devices = self.extract_devices(intent_message)
+        self.States = self.extract_states(intent_message)
+
+        for x in range(0, len(self.Devices)):
+            
+            if len(self.States) != len(self.Devices):
+                self.State = self.States[1]
+            else:
+                self.State = self.States[x]
+
+            if self.Devices[x] == "downlights":
+                ip = "192.168.0.160"
+                port = 16000
+                if self.State == "On":
+                    data = "1"
+                if self.State == "Off":
+                    data = "0"
+            if self.Devices[x] == "plug":
+                ip = "192.168.0.183"
+                port = 18003
+                if self.State == "On":
+                    data = "1"
+                if self.State == "Off":
+                    data = "0"
+            if self.Devices[x] == "desk light":
+                ip = "192.168.0.181"
+                port = 4221
+                if self.State == "Off":
+                    data = "f,0,0,0,0,0"
+                if self.State == "On":
+                    data = "f,0,0,0,0,255"
+            if self.Devices[x] == "bedside lamp":
+                ip = "192.168.0.180"
+                port = 4220
+                if self.State == "Off":
+                    data = "f,0"
+                if self.State == "On":
+                    data = "f,255"
+            if self.Devices[x] == "smart lamp":
+                ip = "192.168.0.182"
+                port = 4222
+                if self.State == "Off":
+                    data = "f,0,0,0"
+                if self.State == "On":
+                    data = "f,255,255,255"
 
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
         sock.sendto(data, (ip, port))
