@@ -83,7 +83,7 @@ class SmartDevices(object):
         self.States = self.extract_states(intent_message)
 
         for x in range(0, len(self.Devices)):
-            
+
             if len(self.States) != len(self.Devices):
                 self.State = self.States[0]
             else:
@@ -144,38 +144,33 @@ class SmartDevices(object):
         # action code goes here...
         print '[Received] intent: {}'.format(intent_message.intent.intent_name)
 
-        brightnessSet = False
+        self.Devices = self.extract_devices(intent_message)
+        self.Brightnesses = self.extract_brightness(intent_message)
 
-        for (slot_value, slot) in intent_message.slots.items():
-            if slot_value == "Device":
-                self.Device = slot.first().value.encode("utf8")
-            if slot_value == "Brightness":
-                self.Brightness = slot.first().value.encode("utf8")
-                brightnessSet = True
+        for x in range(0, len(self.Devices)):
 
-        deviceSet = False
+            if len(self.Brightnesses) != len(self.Devices):
+                self.Brightness = self.Brightnesses[0]
+            else:
+                self.Brightness = self.Brightnesses[x]
 
-        if self.Device == "downlights":
-            ip = "192.168.0.160"
-            port = 16000
-            value = (float(self.Brightness) / 100) * 1023
-            data = "l," + str(value)
-            deviceSet = True
-        
-        if self.Device == "bedside lamp":
-            ip = "192.168.0.180"
-            port = 4220
-            value = (float(self.Brightness) / 100) * 255
-            data = "f," + str(value)
-            deviceSet = True
+            if self.Devices[x] == "downlights":
+                ip = "192.168.0.160"
+                port = 16000
+                value = (float(self.Brightness) / 100) * 1023
+                data = "l," + str(value)
+            
+            if self.Devices[x] == "bedside lamp":
+                ip = "192.168.0.180"
+                port = 4220
+                value = (float(self.Brightness) / 100) * 255
+                data = "f," + str(value)
 
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
-        sock.sendto(data, (ip, port))
+            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
+            sock.sendto(data, (ip, port))
 
-        if deviceSet and brightnessSet:
+        if self.Brightness is None:
             tts = random.choice(success_tts)
-        elif self.Brightness is None:
-            tts = random.choice(no_slot_tts)
         else:
             tts = random.choice(fail_tts)
         #tts = self.Device + " set to " + self.Brightness + " percent"
@@ -190,49 +185,52 @@ class SmartDevices(object):
         # action code goes here...
         print '[Received] intent: {}'.format(intent_message.intent.intent_name)
 
-        for (slot_value, slot) in intent_message.slots.items():
-            if slot_value == "Device":
-                self.Device = slot.first().value.encode("utf8")
+        self.Devices = self.extract_devices(intent_message)
+        self.Colors = self.extract_colors(intent_message)
 
-            if slot_value == "Color":
-                self.Color = slot.first().value.encode("utf8")
-
-        deviceSet = False
+        failed = False
         data = " "
+        for x in range(0, len(self.Devices)):
 
-        if self.Device == "downlights":
-            ip = "192.168.0.160"
-            port = 16000
-            data = "t," + dataFromColor.ctFromColor(self.Color)
-            deviceSet = True
-        
-        if self.Device == "desk light":
-            ip = "192.168.0.181"
-            port = 4221
-            data = "f," + dataFromColor.rgbctFromColor(self.Color)
-            deviceSet = True
-        
-        if self.Device == "smart lamp":
-            ip = "192.168.0.182"
-            port = 4222
-            deviceSet = True
-            if self.Color == "fire":
-                data = "b"
-            elif self.Color == "clouds":
-                data = "d"
-            elif self.Color == "cycle":
-                data = "c"
-            else: 
-                data = "f," + dataFromColor.rgbFromColor(self.Color)
+            if len(self.Colors) != len(self.Devices):
+                self.Color = self.Colors[0]
+            else:
+                self.Color = self.Colors[x]
 
-        if data is not "fail" and deviceSet:
-            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
-            sock.sendto(data, (ip, port))
-            tts = random.choice(success_tts)
-        elif deviceSet == False:
-            tts = random.choice(no_slot_tts)
-        else:
-            tts = random.choice(fail_tts)
+            if self.Device == "downlights":
+                ip = "192.168.0.160"
+                port = 16000
+                data = "t," + dataFromColor.ctFromColor(self.Color)
+                deviceSet = True
+            
+            if self.Device == "desk light":
+                ip = "192.168.0.181"
+                port = 4221
+                data = "f," + dataFromColor.rgbctFromColor(self.Color)
+                deviceSet = True
+            
+            if self.Device == "smart lamp":
+                ip = "192.168.0.182"
+                port = 4222
+                deviceSet = True
+                if self.Color == "fire":
+                    data = "b"
+                elif self.Color == "clouds":
+                    data = "d"
+                elif self.Color == "cycle":
+                    data = "c"
+                else: 
+                    data = "f," + dataFromColor.rgbFromColor(self.Color)
+
+            if data is not "fail":
+                sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
+                sock.sendto(data, (ip, port))
+                if failed is False:
+                    tts = random.choice(success_tts)
+            else:
+                failed = True
+                tts = random.choice(fail_tts)
+
         
         hermes.publish_end_session(intent_message.session_id, tts)
 
