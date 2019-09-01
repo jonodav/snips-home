@@ -9,6 +9,7 @@ import io
 import socket
 import random
 import datetime as dt
+import time
 
 CONFIG_INI = "config.ini"
 
@@ -234,6 +235,17 @@ class SmartDevices(object):
         
         hermes.publish_end_session(intent_message.session_id, tts)
 
+    def fixDownlightCallback(self, hermes, intent_message):
+        print '[Received] intent: {}'.format(intent_message.intent.intent_name)
+
+        hermes.publish_end_session(intent_message.session_id, "On it")
+
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
+        sock.sendto("2", ("192.168.0.160", 16000))
+        time.sleep(1)
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
+        sock.sendto("2", ("192.168.0.160", 16000))
+
     def setBrightnessColorCallback(self, hermes, intent_message):
         # terminate the session first if not continue
         #hermes.publish_end_session(intent_message.session_id, "")
@@ -439,6 +451,8 @@ class SmartDevices(object):
             self.returnCallback(hermes, intent_message)
         if coming_intent == 'thejonnyd:SetBrightnessAndColor':
             self.setBrightnessColorCallback(hermes, intent_message)
+        if coming_intent == 'thejonnyd:FixDownlights':
+            self.fixDownlightCallback(hermes, intent_message)
 
         # more callback and if condition goes here...
 
