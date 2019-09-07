@@ -476,9 +476,9 @@ class SmartDevices(object):
                         tts += "and"
                 if sensorData is not None:
                     tempHum = sensorData.split(",")
-                    if self.Datas == 'temperature':
+                    if self.Datas[x] == 'temperature':
                         tts += "The {0} temperature is {1} degrees".format(self.Rooms[x], tempHum[0])
-                    elif self.Datas == 'humidity':
+                    elif self.Datas[x] == 'humidity':
                         tts += "The {0} humidity is {1} percent".format(self.Rooms[x], tempHum[1])
                     else:
                         tts += "The {0} temperature is {1} degrees with {2} percent humidity".format(self.Rooms[x], tempHum[0], tempHum[1])
@@ -501,9 +501,9 @@ class SmartDevices(object):
                         tts += "and"
                 if sensorData is not None:
                     tempHum = sensorData.split(",")
-                    if self.Datas == 'temperature':
+                    if self.Datas[x] == 'temperature':
                         tts += "The {0} temperature is {1} degrees".format(self.Rooms[x], tempHum[0])
-                    elif self.Datas == 'humidity':
+                    elif self.Datas[x] == 'humidity':
                         tts += "The {0} humidity is {1} percent".format(self.Rooms[x], tempHum[1])
                     else:
                         tts += "The {0} temperature is {1} degrees with {2} percent humidity".format(self.Rooms[x], tempHum[0], tempHum[1])
