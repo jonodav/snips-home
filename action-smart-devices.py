@@ -452,6 +452,8 @@ class SmartDevices(object):
         
         # action code goes here...
         print '[Received] intent: {}'.format(intent_message.intent.intent_name)
+
+        self.Datas = ""
         
         self.Rooms = self.extract_rooms(intent_message)
         self.Datas = self.extract_sensorQueries(intent_message)
@@ -473,7 +475,7 @@ class SmartDevices(object):
                         print("UDP Timeout")
                         break
                 if x > 0:
-                        tts += "and"
+                        tts += " and "
                 if sensorData is not None:
                     tempHum = sensorData.split(",")
                     if self.Datas[x] == 'temperature':
@@ -498,7 +500,7 @@ class SmartDevices(object):
                         print("UDP Timeout")
                         break
                 if x > 0:
-                        tts += "and"
+                        tts += " and "
                 if sensorData is not None:
                     tempHum = sensorData.split(",")
                     if self.Datas[x] == 'temperature':
