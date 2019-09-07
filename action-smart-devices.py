@@ -462,7 +462,7 @@ class SmartDevices(object):
             if self.Rooms[x] == 'living room':
                 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
                 sock.sendto("s", ("192.168.0.191", 4331))
-                sock.bind(("127.0.0.1", 4331))
+                sock.bind(('', 4331))
                 sensorData = None
                 start_time = time.time()
                 while sensorData == None:
@@ -484,7 +484,7 @@ class SmartDevices(object):
             else:
                 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
                 sock.sendto("s", ("192.168.0.190", 4330))
-                sock.bind(("127.0.0.1", 4330))
+                sock.bind(('', 4330))
                 sensorData = None
                 start_time = time.time()
                 while sensorData == None:
