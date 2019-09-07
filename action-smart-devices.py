@@ -462,7 +462,7 @@ class SmartDevices(object):
             if self.Rooms[x] == 'living room':
                 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
                 sock.sendto("s", ("192.168.0.191", 4331))
-                sock.bind((socket.gethostname(), 4331))
+                #sock.bind((socket.gethostname(), 4331))
                 sensorData = None
                 start_time = time.time()
                 while True:
@@ -487,7 +487,7 @@ class SmartDevices(object):
             else:
                 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
                 sock.sendto("s", ("192.168.0.190", 4330))
-                sock.bind((socket.gethostname(), 4330))
+                #sock.bind((socket.gethostname(), 4330))
                 sensorData = None
                 start_time = time.time()
                 while True:
@@ -509,7 +509,7 @@ class SmartDevices(object):
                         tts += "The {0} temperature is {1} degrees with {2} percent humidity".format(self.Rooms[x], tempHum[0], tempHum[1])
                 else: 
                     tts += "I couldnt reach the {0} sensor".format(self.Rooms[x])
-                    
+
         hermes.publish_end_session(intent_message.session_id, tts)
 
     # --> Master callback function, triggered everytime an intent is recognized
