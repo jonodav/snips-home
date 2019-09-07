@@ -69,6 +69,18 @@ class SmartDevices(object):
             for State in intent_message.slots.State.all():
                 extractedStates.append(State.value)
         return extractedStates
+    def extract_rooms(self, intent_message):
+        extractedRooms = []
+        if intent_message.slots.Room:
+            for Room in intent_message.slots.Room.all():
+                extractedRooms.append(Room.value)
+        return extractedRooms
+    def extract_sensorQueries(self, intent_message):
+        extractedQueries = []
+        if intent_message.slots.Data:
+            for Data in intent_message.slots.Data.all():
+                extractedQueries.append(Data.value)
+        return extractedQueries
         
     # --> Sub callback function, one per intent
     def onOffCallback(self, hermes, intent_message):
@@ -434,6 +446,64 @@ class SmartDevices(object):
         tts = random.choice(hi_tts)
         hermes.publish_end_session(intent_message.session_id, tts)
 
+    def getSensorDataCallback(self, hermes, intent_message):
+        # terminate the session first if not continue
+        #hermes.publish_end_session(intent_message.session_id, "")
+        
+        # action code goes here...
+        print '[Received] intent: {}'.format(intent_message.intent.intent_name)
+        
+        self.Rooms = self.extract_rooms(intent_message)
+        self.Datas = self.extract_sensorQueries(intent_message)
+
+        tts = ""
+
+        for x in range(0, len(self.Rooms)):
+            if self.Rooms[x] == 'living room':
+                sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
+                sock.sendto("s", ("192.168.0.191", 4331))
+                sock.bind(("127.0.0.1", 4331))
+                sensorData = None
+                start_time = time.time()
+                while sensorData == None:
+                    sensorData, addr = sock.recvfrom(4331)
+                    if (time.time() - start_time) > 1:
+                        break
+                if x > 0:
+                        tts += "and"
+                if sensorData is not None:
+                    tempHum = sensorData.split(",")
+                    if self.Datas == 'temperature':
+                        tts += "The {0} temperature is {1} degrees".format(self.Rooms[x], tempHum[0])
+                    elif self.Datas == 'humidity':
+                        tts += "The {0} humidity is {1} percent".format(self.Rooms[x], tempHum[1])
+                    else:
+                        tts += "The {0} temperature is {1} degrees with {2} percent humidity".format(self.Rooms[x], tempHum[0], tempHum[1])
+                else: 
+                    tts += "I couldnt reach the {0} sensor".format(self.Rooms[x])
+            else:
+                sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
+                sock.sendto("s", ("192.168.0.190", 4330))
+                sock.bind(("127.0.0.1", 4330))
+                sensorData = None
+                start_time = time.time()
+                while sensorData == None:
+                    sensorData, addr = sock.recvfrom(4330)
+                    if (time.time() - start_time) > 1:
+                        break
+                if x > 0:
+                        tts += "and"
+                if sensorData is not None:
+                    tempHum = sensorData.split(",")
+                    if self.Datas == 'temperature':
+                        tts += "The {0} temperature is {1} degrees".format(self.Rooms[x], tempHum[0])
+                    elif self.Datas == 'humidity':
+                        tts += "The {0} humidity is {1} percent".format(self.Rooms[x], tempHum[1])
+                    else:
+                        tts += "The {0} temperature is {1} degrees with {2} percent humidity".format(self.Rooms[x], tempHum[0], tempHum[1])
+                else: 
+                    tts += "I couldnt reach the {0} sensor".format(self.Rooms[x])
+
     # --> Master callback function, triggered everytime an intent is recognized
     def master_intent_callback(self,hermes, intent_message):
         coming_intent = intent_message.intent.intent_name
@@ -453,6 +523,8 @@ class SmartDevices(object):
             self.setBrightnessColorCallback(hermes, intent_message)
         if coming_intent == 'thejonnyd:FixDownlights':
             self.fixDownlightCallback(hermes, intent_message)
+        if coming_intent == 'thejonnyd:GetSensorData':
+            self.getSensorDataCallback(hermes, intent_message)
 
         # more callback and if condition goes here...
 
