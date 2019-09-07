@@ -462,11 +462,15 @@ class SmartDevices(object):
             if self.Rooms[x] == 'living room':
                 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
                 sock.sendto("s", ("192.168.0.191", 4331))
+                sock.bind((socket.gethostname(), 4331))
                 sensorData = None
                 start_time = time.time()
-                while sensorData == None:
-                    sensorData, addr = sock.recvfrom(4331)
-                    if (time.time() - start_time) > 1:
+                while True:
+                    if sock.recv != None:
+                        sensorData, addr = sock.recvfrom(4331)
+                        break
+                    if (time.time() - start_time) > 2:
+                        print("UDP Timeout")
                         break
                 if x > 0:
                         tts += "and"
@@ -483,11 +487,15 @@ class SmartDevices(object):
             else:
                 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
                 sock.sendto("s", ("192.168.0.190", 4330))
+                sock.bind((socket.gethostname(), 4330))
                 sensorData = None
                 start_time = time.time()
-                while sensorData == None:
-                    sensorData, addr = sock.recvfrom(4330)
-                    if (time.time() - start_time) > 1:
+                while True:
+                    if sock.recv != None:
+                        sensorData, addr = sock.recvfrom(4330)
+                        break
+                    if (time.time() - start_time) > 2:
+                        print("UDP Timeout")
                         break
                 if x > 0:
                         tts += "and"
