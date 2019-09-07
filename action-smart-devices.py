@@ -509,6 +509,8 @@ class SmartDevices(object):
                         tts += "The {0} temperature is {1} degrees with {2} percent humidity".format(self.Rooms[x], tempHum[0], tempHum[1])
                 else: 
                     tts += "I couldnt reach the {0} sensor".format(self.Rooms[x])
+                    
+        hermes.publish_end_session(intent_message.session_id, tts)
 
     # --> Master callback function, triggered everytime an intent is recognized
     def master_intent_callback(self,hermes, intent_message):
