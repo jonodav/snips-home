@@ -183,19 +183,20 @@ class SmartDevices(object):
                     data = "f,0,0,0"
                 if self.State == "On":
                     data = "f,255,255,255"
+
+            if ip is not None:
+                sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
+                sock.sendto(data, (ip, port))
+                tts = random.choice(success_tts)
+            else:
+                tts = random.choice(fail_tts)
+
             if self.Devices[x] == "lights":
+                tts = random.choice(success_tts)
                 if self.State == "Off":
                     self.lightsOff()
                 if self.State == "On":
                     self.lightsOn()
-
-        if ip is not None:
-            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
-            sock.sendto(data, (ip, port))
-        if data is not None:
-            tts = random.choice(success_tts)
-        else:
-            tts = random.choice(fail_tts)
         #tts = "Turned the " + self.Device + " " + self.State
 
         # if need to speak the execution result by tts
