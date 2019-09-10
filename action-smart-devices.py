@@ -135,7 +135,6 @@ class SmartDevices(object):
         # action code goes here...
         print '[Received] intent: {}'.format(intent_message.intent.intent_name)
 
-        data = None
         ip = None
 
         self.Devices = self.extract_devices(intent_message)
