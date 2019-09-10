@@ -185,10 +185,10 @@ class SmartDevices(object):
                     data = "f,255,255,255"
             if self.Devices[x] == "lights":
                 if self.State == "Off":
-                    lightsOff()
+                    self.lightsOff()
                 if self.State == "On":
-                    lightsOn()
-                    
+                    self.lightsOn()
+
         if ip is not None:
             sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
             sock.sendto(data, (ip, port))
@@ -438,7 +438,7 @@ class SmartDevices(object):
             if slot_value == "Animal":
                 self.Animal = slot.first().value.encode("utf8")
 
-        lightsOff()
+        self.lightsOff()
 
         if self.Animal == "aligator":
             tts = "In a while, crocodile!"
@@ -453,7 +453,7 @@ class SmartDevices(object):
         # action code goes here...
         print '[Received] intent: {}'.format(intent_message.intent.intent_name)
 
-        lightsOn()
+        self.lightsOn()
 
         tts = random.choice(hi_tts)
         hermes.publish_end_session(intent_message.session_id, tts)
