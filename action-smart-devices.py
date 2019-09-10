@@ -81,6 +81,51 @@ class SmartDevices(object):
             for Data in intent_message.slots.Data.all():
                 extractedQueries.append(Data.value)
         return extractedQueries
+    
+    def lightsOff():
+        #Set downlights
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
+        sock.sendto("0", ("192.168.0.160", 16000))
+        #Set desk led strip
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
+        sock.sendto("f,0,0,0,0,0", ("192.168.0.181", 4221))
+        #Set smart lamp
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
+        sock.sendto("f,0,0,0", ("192.168.0.182", 4222))
+        #Set bedside lamp
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
+        sock.sendto("f,0", ("192.168.0.180", 4220))
+
+    def lightsOn():
+        if dt.datetime.now().hour < 15:
+            dlData = "f,818,1023"
+            deskData = "f,0,0,0,0,255"
+            rlData = "f,0"
+        elif dt.datetime.now().hour >= 15 and dt.datetime.now().hour < 19:
+            dlData = "f,818,512"
+            deskData = "f,0,0,0,255,255"
+            lampBrightness = (dt.datetime.now().hour - 18) * 20
+            if lampBrightness < 0:
+                lampBrightness = 0
+            rlData = "f," + str(lampBrightness)
+        elif dt.datetime.now().hour >= 19 and dt.datetime.now().hour < 21:
+            dlData = "f,767,256"
+            deskData = "f,0,0,0,255,0"
+            rlData = "f," + str((dt.datetime.now().hour - 18) * 20)
+        else: 
+            dlData = "f,512,0"
+            deskData = "f,0,0,0,255,0"
+            rlData = "f,128"
+
+        #Set downlights
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
+        sock.sendto(dlData, ("192.168.0.160", 16000))
+        #Set desk led strip
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
+        sock.sendto(deskData, ("192.168.0.181", 4221))
+        #Set bedside lamp
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
+        sock.sendto(rlData, ("192.168.0.180", 4220))
         
     # --> Sub callback function, one per intent
     def onOffCallback(self, hermes, intent_message):
@@ -399,20 +444,6 @@ class SmartDevices(object):
         else:
             tts = random.choice(bye_tts)
         hermes.publish_end_session(intent_message.session_id, tts)
-    
-    def lightsOff():
-        #Set downlights
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
-        sock.sendto("0", ("192.168.0.160", 16000))
-        #Set desk led strip
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
-        sock.sendto("f,0,0,0,0,0", ("192.168.0.181", 4221))
-        #Set smart lamp
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
-        sock.sendto("f,0,0,0", ("192.168.0.182", 4222))
-        #Set bedside lamp
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
-        sock.sendto("f,0", ("192.168.0.180", 4220))
 
     def returnCallback(self, hermes, intent_message):
         # terminate the session first if not continue
@@ -420,38 +451,8 @@ class SmartDevices(object):
         
         # action code goes here...
         print '[Received] intent: {}'.format(intent_message.intent.intent_name)
+
         lightsOn()
-
-    def lightsOn():
-        if dt.datetime.now().hour < 15:
-            dlData = "f,818,1023"
-            deskData = "f,0,0,0,0,255"
-            rlData = "f,0"
-        elif dt.datetime.now().hour >= 15 and dt.datetime.now().hour < 19:
-            dlData = "f,818,512"
-            deskData = "f,0,0,0,255,255"
-            lampBrightness = (dt.datetime.now().hour - 18) * 20
-            if lampBrightness < 0:
-                lampBrightness = 0
-            rlData = "f," + str(lampBrightness)
-        elif dt.datetime.now().hour >= 19 and dt.datetime.now().hour < 21:
-            dlData = "f,767,256"
-            deskData = "f,0,0,0,255,0"
-            rlData = "f," + str((dt.datetime.now().hour - 18) * 20)
-        else: 
-            dlData = "f,512,0"
-            deskData = "f,0,0,0,255,0"
-            rlData = "f,128"
-
-        #Set downlights
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
-        sock.sendto(dlData, ("192.168.0.160", 16000))
-        #Set desk led strip
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
-        sock.sendto(deskData, ("192.168.0.181", 4221))
-        #Set bedside lamp
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
-        sock.sendto(rlData, ("192.168.0.180", 4220))
 
         tts = random.choice(hi_tts)
         hermes.publish_end_session(intent_message.session_id, tts)
