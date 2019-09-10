@@ -82,7 +82,7 @@ class SmartDevices(object):
                 extractedQueries.append(Data.value)
         return extractedQueries
     
-    def lightsOff():
+    def lightsOff(self):
         #Set downlights
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
         sock.sendto("0", ("192.168.0.160", 16000))
@@ -96,7 +96,7 @@ class SmartDevices(object):
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
         sock.sendto("f,0", ("192.168.0.180", 4220))
 
-    def lightsOn():
+    def lightsOn(self):
         if dt.datetime.now().hour < 15:
             dlData = "f,818,1023"
             deskData = "f,0,0,0,0,255"
