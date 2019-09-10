@@ -137,6 +137,11 @@ class SmartDevices(object):
                     data = "f,0,0,0"
                 if self.State == "On":
                     data = "f,255,255,255"
+            if self.Devices[x] == "smart lamp":
+                if self.State == "Off":
+                    lightsOff()
+                if self.State == "On":
+                    lightsOn()
             
             sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
             sock.sendto(data, (ip, port))
@@ -387,6 +392,15 @@ class SmartDevices(object):
             if slot_value == "Animal":
                 self.Animal = slot.first().value.encode("utf8")
 
+        lightsOff()
+
+        if self.Animal == "aligator":
+            tts = "In a while, crocodile!"
+        else:
+            tts = random.choice(bye_tts)
+        hermes.publish_end_session(intent_message.session_id, tts)
+    
+    def lightsOff():
         #Set downlights
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
         sock.sendto("0", ("192.168.0.160", 16000))
@@ -400,19 +414,15 @@ class SmartDevices(object):
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
         sock.sendto("f,0", ("192.168.0.180", 4220))
 
-        if self.Animal == "aligator":
-            tts = "In a while, crocodile!"
-        else:
-            tts = random.choice(bye_tts)
-        hermes.publish_end_session(intent_message.session_id, tts)
-
     def returnCallback(self, hermes, intent_message):
         # terminate the session first if not continue
         #hermes.publish_end_session(intent_message.session_id, "")
         
         # action code goes here...
         print '[Received] intent: {}'.format(intent_message.intent.intent_name)
+        lightsOn()
 
+    def lightsOn():
         if dt.datetime.now().hour < 15:
             dlData = "f,818,1023"
             deskData = "f,0,0,0,0,255"
