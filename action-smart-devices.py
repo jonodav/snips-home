@@ -136,6 +136,7 @@ class SmartDevices(object):
         print '[Received] intent: {}'.format(intent_message.intent.intent_name)
 
         data = None
+        ip = None
 
         self.Devices = self.extract_devices(intent_message)
         self.States = self.extract_states(intent_message)
@@ -182,15 +183,15 @@ class SmartDevices(object):
                     data = "f,0,0,0"
                 if self.State == "On":
                     data = "f,255,255,255"
-            if self.Devices[x] == "smart lamp":
+            if self.Devices[x] == "lights":
                 if self.State == "Off":
                     lightsOff()
                 if self.State == "On":
                     lightsOn()
-            
+                    
+        if ip is not None:
             sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
             sock.sendto(data, (ip, port))
-
         if data is not None:
             tts = random.choice(success_tts)
         else:
