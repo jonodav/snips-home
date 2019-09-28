@@ -4,6 +4,7 @@
 from snipsTools import SnipsConfigParser
 from hermes_python.hermes import Hermes
 from hermes_python.ontology import *
+from deviceCreds import *
 import dataFromColor
 import io
 import socket
@@ -85,47 +86,48 @@ class SmartDevices(object):
     def lightsOff(self):
         #Set downlights
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
-        sock.sendto("0", ("192.168.0.160", 16000))
+        sock.sendto("0", (downlightIP, downlightPort))
         #Set desk led strip
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
-        sock.sendto("f,0,0,0,0,0", ("192.168.0.181", 4221))
+        sock.sendto("f,0,0,0,0,0", (deskStripIP, deskStripPort))
         #Set smart lamp
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
-        sock.sendto("f,0,0,0", ("192.168.0.182", 4222))
+        sock.sendto("f,0,0,0", (smartlampIP, smartlampPort))
         #Set bedside lamp
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
-        sock.sendto("f,0", ("192.168.0.180", 4220))
+        sock.sendto("f,0", (bedsideLampIP, bedsideLampPort))
 
     def lightsOn(self):
-        if dt.datetime.now().hour < 15:
+        if dt.datetime.now().hour < 17:
             dlData = "f,818,1023"
             deskData = "f,0,0,0,0,255"
             rlData = "f,0"
-        elif dt.datetime.now().hour >= 15 and dt.datetime.now().hour < 19:
+        if  dt.datetime.now().hour >= 17 and dt.datetime.now().hour < 18:
+            dlData = "f,818,767"
+            deskData = "f,0,0,0,255,255"
+            rlData = "f,0"
+        elif dt.datetime.now().hour >= 19 and dt.datetime.now().hour < 20:
             dlData = "f,818,512"
             deskData = "f,0,0,0,255,255"
-            lampBrightness = (dt.datetime.now().hour - 18) * 20
-            if lampBrightness < 0:
-                lampBrightness = 0
-            rlData = "f," + str(lampBrightness)
-        elif dt.datetime.now().hour >= 19 and dt.datetime.now().hour < 21:
+            rlData = "f,0"
+        elif dt.datetime.now().hour >= 20 and dt.datetime.now().hour < 22:
             dlData = "f,767,256"
             deskData = "f,0,0,0,255,0"
-            rlData = "f," + str((dt.datetime.now().hour - 18) * 20)
+            rlData = "f," + str((dt.datetime.now().hour - 20) * 32)
         else: 
             dlData = "f,512,0"
             deskData = "f,0,0,0,255,0"
-            rlData = "f,128"
+            rlData = "f,64"
 
         #Set downlights
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
-        sock.sendto(dlData, ("192.168.0.160", 16000))
+        sock.sendto(dlData, (downlightIP, downlightPort))
         #Set desk led strip
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
-        sock.sendto(deskData, ("192.168.0.181", 4221))
+        sock.sendto(deskData, (deskStripIP, deskStripPort))
         #Set bedside lamp
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
-        sock.sendto(rlData, ("192.168.0.180", 4220))
+        sock.sendto(rlData, (bedsideLampIP, bedsideLampPort))
         
     # --> Sub callback function, one per intent
     def onOffCallback(self, hermes, intent_message):
@@ -148,36 +150,36 @@ class SmartDevices(object):
                 self.State = self.States[x]
 
             if self.Devices[x] == "downlights":
-                ip = "192.168.0.160"
-                port = 16000
+                ip = downlightIP
+                port = downlightPort
                 if self.State == "On":
                     data = "1"
                 if self.State == "Off":
                     data = "0"
             if self.Devices[x] == "plug":
-                ip = "192.168.0.183"
-                port = 18003
+                ip = plugIP
+                port = plugPort
                 if self.State == "On":
                     data = "1"
                 if self.State == "Off":
                     data = "0"
             if self.Devices[x] == "desk light":
-                ip = "192.168.0.181"
-                port = 4221
+                ip = deskStripIP
+                port = deskStripPort
                 if self.State == "Off":
                     data = "f,0,0,0,0,0"
                 if self.State == "On":
                     data = "f,0,0,0,0,255"
             if self.Devices[x] == "bedside lamp":
-                ip = "192.168.0.180"
-                port = 4220
+                ip = bedsideLampIP
+                port = bedsideLampPort
                 if self.State == "Off":
                     data = "f,0"
                 if self.State == "On":
                     data = "f,255"
             if self.Devices[x] == "smart lamp":
-                ip = "192.168.0.182"
-                port = 4222
+                ip = smartlampIP
+                port = smartlampPort
                 if self.State == "Off":
                     data = "f,0,0,0"
                 if self.State == "On":
@@ -219,14 +221,14 @@ class SmartDevices(object):
                 self.Brightness = self.Brightnesses[x]
 
             if self.Devices[x] == "downlights":
-                ip = "192.168.0.160"
-                port = 16000
+                ip = downlightIP
+                port = downlightPort
                 value = (float(self.Brightness) / 100) * 1023
                 data = "l," + str(value)
             
             if self.Devices[x] == "bedside lamp":
-                ip = "192.168.0.180"
-                port = 4220
+                ip = bedsideLampIP
+                port = bedsideLampPort
                 value = (float(self.Brightness) / 100) * 255
                 data = "f," + str(value)
 
@@ -262,20 +264,20 @@ class SmartDevices(object):
                 self.Color = self.Colors[x]
 
             if self.Devices[x] == "downlights":
-                ip = "192.168.0.160"
-                port = 16000
+                ip = downlightIP
+                port = downlightPort
                 data = "t," + dataFromColor.ctFromColor(self.Color)
                 deviceSet = True
             
             if self.Devices[x] == "desk light":
-                ip = "192.168.0.181"
-                port = 4221
+                ip = deskStripIP
+                port = deskStripPort
                 data = "f," + dataFromColor.rgbctFromColor(self.Color)
                 deviceSet = True
             
             if self.Devices[x] == "smart lamp":
-                ip = "192.168.0.182"
-                port = 4222
+                ip = smartlampIP
+                port = smartlampPort
                 deviceSet = True
                 if self.Color == "fire":
                     data = "b"
@@ -304,10 +306,10 @@ class SmartDevices(object):
         hermes.publish_end_session(intent_message.session_id, "On it")
 
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
-        sock.sendto("2", ("192.168.0.160", 16000))
+        sock.sendto("2", (downlightIP, downlightPort))
         time.sleep(1)
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
-        sock.sendto("2", ("192.168.0.160", 16000))
+        sock.sendto("2", (downlightIP, downlightPort))
 
     def setBrightnessColorCallback(self, hermes, intent_message):
         # terminate the session first if not continue
@@ -332,8 +334,8 @@ class SmartDevices(object):
         data = " "
 
         if self.Device == "downlights":
-            ip = "192.168.0.160"
-            port = 16000
+            ip = downlightIP
+            port = downlightPort
             value = (float(self.Brightness) / 100) * 1023
             data = "f," + str(value) + "," + dataFromColor.ctFromColor(self.Color)
             deviceSet = True
@@ -409,16 +411,16 @@ class SmartDevices(object):
         if sceneData is True:
             #Set downlights
             sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
-            sock.sendto(downlightData, ("192.168.0.160", 16000))
+            sock.sendto(downlightData, (downlightIP, downlightPort))
             #Set desk led strip
             sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
-            sock.sendto(deskstripData, ("192.168.0.181", 4221))
+            sock.sendto(deskstripData, (deskStripIP, deskStripPort))
             #Set smart lamp
             sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
-            sock.sendto(smartlampData, ("192.168.0.182", 4222))
+            sock.sendto(smartlampData, (smartlampIP, smartlampPort))
             #Set bedside lamp
             sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
-            sock.sendto(bedlampData, ("192.168.0.180", 4220))
+            sock.sendto(bedlampData, (bedsideLampIP, bedsideLampPort))
             tts = random.choice(success_tts)
         else:
             tts = random.choice(fail_tts)
@@ -475,13 +477,12 @@ class SmartDevices(object):
         for x in range(0, len(self.Rooms)):
             if self.Rooms[x] == 'living room':
                 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
-                sock.sendto("s", ("192.168.0.191", 4331))
-                #sock.bind((socket.gethostname(), 4331))
+                sock.sendto("s", (livingtempIP, livingtempPort))
                 sensorData = None
                 start_time = time.time()
                 while True:
                     if sock.recv != None:
-                        sensorData, addr = sock.recvfrom(4331)
+                        sensorData, addr = sock.recvfrom(livingtempPort)
                         break
                     if (time.time() - start_time) > 2:
                         print("UDP Timeout")
@@ -500,13 +501,12 @@ class SmartDevices(object):
                     tts += "I couldnt reach the {0} sensor".format(self.Rooms[x])
             else:
                 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
-                sock.sendto("s", ("192.168.0.190", 4330))
-                #sock.bind((socket.gethostname(), 4330))
+                sock.sendto("s", (bedtempIP, bedtempPort))
                 sensorData = None
                 start_time = time.time()
                 while True:
                     if sock.recv != None:
-                        sensorData, addr = sock.recvfrom(4330)
+                        sensorData, addr = sock.recvfrom(bedtempPort)
                         break
                     if (time.time() - start_time) > 2:
                         print("UDP Timeout")
