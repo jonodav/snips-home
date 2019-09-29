@@ -102,7 +102,7 @@ class SmartDevices(object):
             dlData = "f,818,1023"
             deskData = "f,0,0,0,0,255"
             rlData = "f,0"
-        if  dt.datetime.now().hour >= 17 and dt.datetime.now().hour < 18:
+        elif  dt.datetime.now().hour >= 17 and dt.datetime.now().hour < 18:
             dlData = "f,818,767"
             deskData = "f,0,0,0,255,255"
             rlData = "f,0"
