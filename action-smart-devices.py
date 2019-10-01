@@ -24,7 +24,7 @@ MQTT_ADDR = "{}:{}".format(MQTT_IP_ADDR, str(MQTT_PORT))
 success_tts = ['Got it', 'Sure', 'Done', 'Ok']
 fail_tts = ["Sorry, I can't do that", "Sorry, that doesn't work", "No"]
 bye_tts = ["Goodbye", "See you later", "Thank goodness"]
-hi_tts = ["Welcome back", "Welcome home"]
+hi_tts = ["Welcome back", "Welcome home", 'Wonderful']
 no_slot_tts = ["What do you mean?", "Don't waste my time", "I can't do anything with that", "Please stop bothering me"]
 
 class SmartDevices(object):
@@ -106,7 +106,7 @@ class SmartDevices(object):
             dlData = "f,818,767"
             deskData = "f,0,0,0,255,255"
             rlData = "f,0"
-        elif dt.datetime.now().hour >= 19 and dt.datetime.now().hour < 20:
+        elif dt.datetime.now().hour >= 18 and dt.datetime.now().hour < 20:
             dlData = "f,818,512"
             deskData = "f,0,0,0,255,255"
             rlData = "f,0"
@@ -435,15 +435,20 @@ class SmartDevices(object):
         print '[Received] intent: {}'.format(intent_message.intent.intent_name)
 
         self.Animal = "null"
+        self.Word = "null"
 
         for (slot_value, slot) in intent_message.slots.items():
             if slot_value == "Animal":
+                self.Animal = slot.first().value.encode("utf8")
+            if slot_value == "Word":
                 self.Animal = slot.first().value.encode("utf8")
 
         self.lightsOff()
 
         if self.Animal == "aligator":
             tts = "In a while, crocodile!"
+        elif self.Word == "night":
+            tts = "Good night"
         else:
             tts = random.choice(bye_tts)
         hermes.publish_end_session(intent_message.session_id, tts)
@@ -455,9 +460,22 @@ class SmartDevices(object):
         # action code goes here...
         print '[Received] intent: {}'.format(intent_message.intent.intent_name)
 
+        self.Word = "null"
+
+        for (slot_value, slot) in intent_message.slots.items():
+            if slot_value == "Word":
+                self.Animal = slot.first().value.encode("utf8")
+
         self.lightsOn()
 
-        tts = random.choice(hi_tts)
+        if self.Word == "morning":
+            tts = "Good morning"
+        elif self.Word == 'back':
+            tts = "Welcome back"
+        elif self.Word == 'home':
+            tts = "Welcome home"
+        else:
+            tts = random.choice(hi_tts)
         hermes.publish_end_session(intent_message.session_id, tts)
 
     def getSensorDataCallback(self, hermes, intent_message):
