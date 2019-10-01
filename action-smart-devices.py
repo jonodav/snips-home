@@ -441,7 +441,7 @@ class SmartDevices(object):
             if slot_value == "Animal":
                 self.Animal = slot.first().value.encode("utf8")
             if slot_value == "Word":
-                self.Animal = slot.first().value.encode("utf8")
+                self.Word = slot.first().value.encode("utf8")
 
         self.lightsOff()
 
@@ -464,7 +464,7 @@ class SmartDevices(object):
 
         for (slot_value, slot) in intent_message.slots.items():
             if slot_value == "Word":
-                self.Animal = slot.first().value.encode("utf8")
+                self.Word = slot.first().value.encode("utf8")
 
         self.lightsOn()
 
