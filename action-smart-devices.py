@@ -163,6 +163,20 @@ class SmartDevices(object):
                     data = "1"
                 if self.State == "Off":
                     data = "0"
+            if self.Devices[x] == "front room lamp":
+                ip = frontLampIP
+                port = frontLampPort
+                if self.State == "On":
+                    data = "1"
+                if self.State == "Off":
+                    data = "0"
+            if self.Devices[x] == "living room lamp":
+                ip = livingLampPort
+                port = livingLampPort
+                if self.State == "On":
+                    data = "1"
+                if self.State == "Off":
+                    data = "0"
             if self.Devices[x] == "desk light":
                 ip = deskStripIP
                 port = deskStripPort
