@@ -285,6 +285,8 @@ class SmartDevices(object):
                     data = "d"
                 elif self.Color == "cycle":
                     data = "c"
+                elif self.Color == "rainbow":
+                    data = "r"
                 else: 
                     data = "f," + dataFromColor.rgbFromColor(self.Color)
 
