@@ -301,6 +301,10 @@ class SmartDevices(object):
                     data = "c"
                 elif self.Color == "rainbow":
                     data = "r"
+                elif self.Color == "sunrise":
+                    data = "g,0,0,100,90,100,0"
+                elif self.Color == 'sunset':
+                    data = "g,255,55,0,0,60,50"
                 else: 
                     data = "f," + dataFromColor.rgbFromColor(self.Color)
 
