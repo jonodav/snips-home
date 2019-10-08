@@ -269,7 +269,7 @@ class SmartDevices(object):
         self.Colors = self.extract_colors(intent_message)
 
         failed = False
-        data = " "
+        data = "fail"
         for x in range(0, len(self.Devices)):
 
             if len(self.Colors) != len(self.Devices):
