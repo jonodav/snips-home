@@ -415,7 +415,7 @@ def getIndexFromColor(color):
      "thistle",
      "plum",
      "violet",
-     "magenta / fuchsia",
+     "fuchsia",
      "orchid",
      "medium violet red",
      "pale violet red",
