@@ -26,6 +26,9 @@ fail_tts = ["Sorry, I can't do that", "Sorry, that doesn't work", "No"]
 bye_tts = ["Goodbye", "See you later", "Thank goodness"]
 hi_tts = ["Welcome back", "Welcome home", 'Wonderful']
 no_slot_tts = ["What do you mean?", "Don't waste my time", "I can't do anything with that", "Please stop bothering me"]
+temp_tts = ["The {0} temperature is {1} degrees", "It's {1} degrees in the {0}", "{1} degrees"]
+hum_tts = ["The {0} humidity is {1} percent", "It's {1} percent humidity in the {0}", "{1} percent"]
+temp_hum_tts = ["The {0} temperature is {1} degrees with {2} percent humidity", "It's {1} degrees and {2} percent humidity in the {0}", "{1} degrees and {2} percent"]
 
 class SmartDevices(object):
     """Class used to wrap action code with mqtt connection
@@ -267,6 +270,10 @@ class SmartDevices(object):
 
         self.Devices = self.extract_devices(intent_message)
         self.Colors = self.extract_colors(intent_message)
+
+        if "lights" in self.Devices:
+            self.Devices[self.Devices.index("lights")] = "downlights"
+            self.Devices.append("desk light")
 
         failed = False
         data = "fail"
@@ -530,11 +537,11 @@ class SmartDevices(object):
                 if sensorData is not None:
                     tempHum = sensorData.split(",")
                     if self.Datas[x] == 'temperature':
-                        tts += "The {0} temperature is {1} degrees".format(self.Rooms[x], tempHum[0])
+                        tts += random.choice(temp_tts).format(self.Rooms[x], tempHum[0])
                     elif self.Datas[x] == 'humidity':
-                        tts += "The {0} humidity is {1} percent".format(self.Rooms[x], tempHum[1])
+                        tts += random.choice(hum_tts).format(self.Rooms[x], tempHum[1])
                     else:
-                        tts += "The {0} temperature is {1} degrees with {2} percent humidity".format(self.Rooms[x], tempHum[0], tempHum[1])
+                        tts += random.choice(temp_hum_tts).format(self.Rooms[x], tempHum[0], tempHum[1])
                 else: 
                     tts += "I couldnt reach the {0} sensor".format(self.Rooms[x])
             else:
@@ -554,11 +561,11 @@ class SmartDevices(object):
                 if sensorData is not None:
                     tempHum = sensorData.split(",")
                     if self.Datas[x] == 'temperature':
-                        tts += "The {0} temperature is {1} degrees".format(self.Rooms[x], tempHum[0])
+                        tts += random.choice(temp_tts).format(self.Rooms[x], tempHum[0])
                     elif self.Datas[x] == 'humidity':
-                        tts += "The {0} humidity is {1} percent".format(self.Rooms[x], tempHum[1])
+                        tts += random.choice(hum_tts).format(self.Rooms[x], tempHum[1])
                     else:
-                        tts += "The {0} temperature is {1} degrees with {2} percent humidity".format(self.Rooms[x], tempHum[0], tempHum[1])
+                        tts += random.choice(temp_hum_tts).format(self.Rooms[x], tempHum[0], tempHum[1])
                 else: 
                     tts += "I couldnt reach the {0} sensor".format(self.Rooms[x])
 
