@@ -539,11 +539,11 @@ class SmartDevices(object):
                 if sensorData is not None:
                     tempHum = sensorData.split(",")
                     if self.Datas[x] == 'temperature':
-                        clockDisplay[0] = [tempHum[0], 10]
+                        clockDisplay = [tempHum[0], 10]
                         tts += random.choice(temp_tts).format(self.Rooms[x], tempHum[0])
                     elif self.Datas[x] == 'humidity':
                         tts += random.choice(hum_tts).format(self.Rooms[x], tempHum[1])
-                        clockDisplay[0] = [tempHum[1], 11]
+                        clockDisplay = [tempHum[1], 11]
                     else:
                         tts += random.choice(temp_hum_tts).format(self.Rooms[x], tempHum[0], tempHum[1])
                 else: 
@@ -566,10 +566,10 @@ class SmartDevices(object):
                     tempHum = sensorData.split(",")
                     if self.Datas[x] == 'temperature':
                         tts += random.choice(temp_tts).format(self.Rooms[x], tempHum[0])
-                        clockDisplay[0] = [tempHum[0], 10]
+                        clockDisplay = [tempHum[0], 10]
                     elif self.Datas[x] == 'humidity':
                         tts += random.choice(hum_tts).format(self.Rooms[x], tempHum[1])
-                        clockDisplay[0] = [tempHum[1], 11]
+                        clockDisplay = [tempHum[1], 11]
                     else:
                         tts += random.choice(temp_hum_tts).format(self.Rooms[x], tempHum[0], tempHum[1])
                 else: 
