@@ -519,6 +519,8 @@ class SmartDevices(object):
 
         tts = ""
 
+        clockDisplay = [0, 10]
+
         for x in range(0, len(self.Rooms)):
             if self.Rooms[x] == 'living room':
                 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
@@ -537,9 +539,11 @@ class SmartDevices(object):
                 if sensorData is not None:
                     tempHum = sensorData.split(",")
                     if self.Datas[x] == 'temperature':
+                        clockDisplay[0] = [tempHum[0], 10]
                         tts += random.choice(temp_tts).format(self.Rooms[x], tempHum[0])
                     elif self.Datas[x] == 'humidity':
                         tts += random.choice(hum_tts).format(self.Rooms[x], tempHum[1])
+                        clockDisplay[0] = [tempHum[1], 11]
                     else:
                         tts += random.choice(temp_hum_tts).format(self.Rooms[x], tempHum[0], tempHum[1])
                 else: 
@@ -562,13 +566,17 @@ class SmartDevices(object):
                     tempHum = sensorData.split(",")
                     if self.Datas[x] == 'temperature':
                         tts += random.choice(temp_tts).format(self.Rooms[x], tempHum[0])
+                        clockDisplay[0] = [tempHum[0], 10]
                     elif self.Datas[x] == 'humidity':
                         tts += random.choice(hum_tts).format(self.Rooms[x], tempHum[1])
+                        clockDisplay[0] = [tempHum[1], 11]
                     else:
                         tts += random.choice(temp_hum_tts).format(self.Rooms[x], tempHum[0], tempHum[1])
                 else: 
                     tts += "I couldnt reach the {0} sensor".format(self.Rooms[x])
-
+        
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
+        sock.sendto("d,{0},{1}".format(clockDisplay[0], clockDisplay[1]), (smartClockIP, smartClockPort))
         hermes.publish_end_session(intent_message.session_id, tts)
 
     # --> Master callback function, triggered everytime an intent is recognized
