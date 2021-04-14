@@ -159,6 +159,13 @@ class SmartDevices(object):
                     data = "1"
                 if self.State == "Off":
                     data = "0"
+            if self.Devices[x] == "fan":
+                ip = fanIP
+                port = fanPort
+                if self.State == "On":
+                    data = "f,1"
+                if self.State == "Off":
+                    data = "f,0"
             if self.Devices[x] == "plug":
                 ip = plugIP
                 port = plugPort
@@ -248,6 +255,12 @@ class SmartDevices(object):
                 port = bedsideLampPort
                 value = (float(self.Brightness) / 100) * 255
                 data = "f," + str(value)
+            
+            if self.Devices[x] == "fan":
+                ip = fanIP
+                port = fanPort
+                value = self.Brightness
+                data = "s," + str(value)
 
             sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
             sock.sendto(data, (ip, port))
